@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-httpd
+  labels:
+    app: httpd
+spec:
+  ports:
+    - nodePort: 30000
+      port: 80
+      targetPort: 80
+  selector:
+    app: httpd
+    tier: web
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-httpd-pv-claim
+  labels:
+    app: httpd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-httpd
+  labels:
+    app: httpd
+spec:
+  selector:
+    matchLabels:
+      app: httpd
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: httpd
+        tier: web
+    spec:
+      containers:
+      - image: shivam3120/apache-webserver-php:v1
+        name: web-httpd
+        ports:
+        - containerPort: 80
+          name: web-httpd
+        volumeMounts:
+        - name: web-httpd-persistent-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: web-httpd-persistent-storage
+        persistentVolumeClaim:
+          claimName: web-httpd-pv-claim
