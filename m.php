@@ -3,6 +3,5 @@ Welcome to Automation Task3
 <pre>
 <?php
 print `ifconfig`;
-printt `ifconfig`;
 ?>
 </pre>
