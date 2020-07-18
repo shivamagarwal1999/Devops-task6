@@ -62,30 +62,33 @@ exit 1
 fi''')
           		
 		}
-       publishers {
-        extendedEmail {
-            recipientList('shivamagarwal.home@gmail.com')
-            defaultSubject('Oops')
-            defaultContent('Something broken')
-            contentType('text/html')
-            triggers {
-                failure {
-                    attachBuildLog(true)
-                    subject('Your Job is not Done')
-                    content('Failed')
-                    recipientList('shivamagarwal.home@gmail.com')
-                    sendTo {
+  publishers {
+    extendedEmail {
+      contentType('text/html')
+      triggers {
+        success{
+          attachBuildLog(true)
+          subject('Build successfull')
+          content('The build was successful and deployment was done.')
+          recipientList('shivamagarwal.home@gmail.com')
+          sendTo {
                         recipientList()
                     }
-                }
-            }
         }
+        failure{
+          attachBuildLog(true)
+          subject('Failed build')
+          content('The build was failed')
+          recipientList('shivamagarwal.home@gmail.com')
+          sendTo {
+                        recipientList()
+                    }
+        }
+      }
     }
-          
+  }
 }
 }
-
-
 
 
 a=10
@@ -109,26 +112,32 @@ echo "Not Running"
 exit 1
 fi''')
 		}
-        publishers {
-        extendedEmail {
-            recipientList('shivamagarwal.home@gmail.com')
-            defaultSubject('Oops')
-            defaultContent('Something broken')
-            contentType('text/html')
-            triggers {
-                failure {
-                    attachBuildLog(true)
-                    subject('Your Job is not Done')
-                    content('Failed')
-                    recipientList('shivamagarwal.home@gmail.com')
-                    sendTo {
+  publishers {
+    extendedEmail {
+      contentType('text/html')
+      triggers {
+        success{
+          attachBuildLog(true)
+          subject('Build successfull')
+          content('The build was successful and deployment was done.')
+          recipientList('shivamagarwal.home@gmail.com')
+           sendTo {
                         recipientList()
                     }
-                }
-            }
         }
+        failure{
+          attachBuildLog(true)
+          subject('Failed build')
+          content('The build was failed')
+          recipientList('shivamagarwal.home@gmail.com')
+          sendTo {
+                        recipientList()
+                    }
+        }
+      }
     }
- }
+  }
+}
 }
 
 
