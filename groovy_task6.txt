@@ -1,0 +1,143 @@
+job('job2'){
+	                   
+		 triggers {
+	                                  upstream('job1', 'SUCCESS')
+	                            }
+	                   steps{
+	                            shell(''' if ls /work1 | grep .php
+then
+if sudo kubectl get deployment --selector "app in (httpd)" | grep web-httpd
+then
+sudo  kubectl apply -f /work1/web.yml
+ export podname=$(sudo kubectl get pods -l app=httpd -o jsonpath='{.items[0].metadata.name}')
+ echo $podname
+ sudo kubectl cp /work1/*.php $podname:/var/www/html/
+ else 
+sudo  kubectl create -f /work1/web.yml
+ export podname=$(sudo kubectl get pods -l app=httpd -o jsonpath='{.items[0].metadata.name}')
+ echo $podname
+ sudo kubectl cp /work1/*.php $podname:/var/www/html/
+ fi
+fi
+
+if ls /work1 | grep .html
+then
+if sudo kubectl get deployment --selector "app in (httpd)" | grep web-httpd
+then
+sudo  kubectl apply -f /work1/web.yml
+ export podname=$(sudo kubectl get pods -l app=httpd -o jsonpath='{.items[0].metadata.name}')
+ echo $podname
+ sudo kubectl cp /work1/*.html $podname:/var/www/html/
+ else 
+sudo  kubectl create -f /work1/web.yml
+ export podname=$(sudo kubectl get pods -l app=httpd -o jsonpath='{.items[0].metadata.name}')
+ echo $podname
+ sudo kubectl cp /work1/*.hml $podname:/var/www/html/
+ fi
+fi''')
+	 }
+}
+
+
+a=10
+if(a==10)
+{
+	job("HTMLFile"){
+		description("this is my discription")
+
+		triggers{
+          upstream('job2', 'SUCCESS')
+        }
+         
+
+		steps{
+          		shell('''export status=$(curl -s -w "%{http_code}" -o /dev/null 192.168.99.103:30000/m.html)
+if [ "cd /var/www/html | ls | grep .html" -a $status -eq 200 ]
+then
+echo "Code is Running"
+exit 0
+else
+echo "Not Running"
+exit 1
+fi''')
+          		
+		}
+       publishers {
+        extendedEmail {
+            recipientList('shivamagarwal.home@gmail.com')
+            defaultSubject('Oops')
+            defaultContent('Something broken')
+            contentType('text/html')
+            triggers {
+                failure {
+                    attachBuildLog(true)
+                    subject('Your Job is not Done')
+                    content('Failed')
+                    recipientList('shivamagarwal.home@gmail.com')
+                    sendTo {
+                        recipientList()
+                    }
+                }
+            }
+        }
+    }
+          
+}
+}
+
+
+
+
+a=10
+if(a==10)
+{
+	job("PHPFile"){
+		description("this is my discription")
+      
+        triggers{
+          upstream('job2', 'SUCCESS')
+        }
+      
+		steps{
+          		shell('''export status=$(curl -s -w "%{http_code}" -o /dev/null 192.168.99.104/new.php)
+if [ "cd /var/www/html | ls | grep .php" -a $status -eq 200 ]
+then
+echo "Code is Running"
+exit 0
+else
+echo "Not Running"
+exit 1
+fi''')
+		}
+        publishers {
+        extendedEmail {
+            recipientList('shivamagarwal.home@gmail.com')
+            defaultSubject('Oops')
+            defaultContent('Something broken')
+            contentType('text/html')
+            triggers {
+                failure {
+                    attachBuildLog(true)
+                    subject('Your Job is not Done')
+                    content('Failed')
+                    recipientList('shivamagarwal.home@gmail.com')
+                    sendTo {
+                        recipientList()
+                    }
+                }
+            }
+        }
+    }
+ }
+}
+
+
+	buildPipelineView('project-tsk6') {
+	    filterBuildQueue()
+	    filterExecutors()
+	    title('Project tsk6 CI Pipeline')
+	    displayedBuilds(3)
+	    selectedJob('job1')
+	    alwaysAllowManualTrigger()
+	    showPipelineParameters()
+	    refreshFrequency(10)
