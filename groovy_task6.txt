@@ -99,7 +99,7 @@ if(a==10)
         }
       
 		steps{
-          		shell('''export status=$(curl -s -w "%{http_code}" -o /dev/null 192.168.99.104/new.php)
+          		shell('''export status=$(curl -s -w "%{http_code}" -o /dev/null 192.168.99.103:30000/m.php)
 if [ "cd /var/www/html | ls | grep .php" -a $status -eq 200 ]
 then
 echo "Code is Running"
