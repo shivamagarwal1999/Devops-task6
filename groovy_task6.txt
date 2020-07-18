@@ -141,3 +141,4 @@ fi''')
 	    alwaysAllowManualTrigger()
 	    showPipelineParameters()
 	    refreshFrequency(10)
+}
